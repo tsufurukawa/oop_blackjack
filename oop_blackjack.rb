@@ -33,7 +33,7 @@ class Deck
 end
 
 # requires 'hand', 'name', 'card_total' instance variables from Player / Dealer Classes
-module CardEvaluable
+module Hand
   # evaluates total of player/dealer hand
   def evaluate_total
     ace_count = 0 
@@ -57,10 +57,14 @@ module CardEvaluable
     self.card_total = total # updates 'card_total' instance variable
     "#{name} total: #{card_total}" # returns card total in string format
   end
+
+  def display_card(card_object)
+    "#{name} drew a #{card_object.display}"
+  end
 end
 
 class Player
-  include CardEvaluable
+  include Hand
   attr_accessor :name, :card_total, :hand
 
   def initialize(name='Player')
@@ -71,7 +75,7 @@ class Player
 end
 
 class Dealer
-  include CardEvaluable 
+  include Hand
   attr_accessor :name, :card_total, :hand
 
   def initialize
@@ -103,7 +107,12 @@ class BlackJack
   def deal_cards(person) # person = either dealer or player
     card = deck.deal
     person.hand << card
-    puts "#{person.name} drew a #{card.display}"
+    
+    if person == dealer && person.hand.size == 1
+      puts "#{person.name}'s first card is hidden."
+    else 
+      puts person.display_card(card)
+    end
   end
 
   def player_turn
@@ -120,7 +129,7 @@ class BlackJack
         break
       else
         new_card = deck.deal # draw a card
-        puts "#{player.name} drew a #{new_card.display}"
+        puts player.display_card(new_card)
         player.hand << new_card
         puts player.evaluate_total 
       end   
@@ -129,11 +138,12 @@ class BlackJack
 
   def dealer_turn
     puts "-----#{dealer.name}'s Turn-----"
-    dealer.evaluate_total
+    puts "#{dealer.name} reveals his first card: #{(dealer.hand[0]).display}"
+    puts dealer.evaluate_total
     while dealer.card_total < 17
       puts "#{dealer.name} hits!"
       new_card = deck.deal
-      puts "#{dealer.name} drew a #{new_card.display}"
+      puts dealer.display_card(new_card)
       dealer.hand << new_card
       puts dealer.evaluate_total
     end
@@ -192,9 +202,8 @@ class BlackJack
     2.times { deal_cards(player) }
     puts player.evaluate_total
     
-    # deal cards and print total value for dealer
+    # deal cards for dealer
     2.times { deal_cards(dealer) }
-    puts dealer.evaluate_total
   
     player_turn
     dealer_turn if player.card_total <= 21 # dealer's turn executed as long as player doesn't bust
