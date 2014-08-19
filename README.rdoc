@@ -1,0 +1,11 @@
+== Ruby OOP Blackjack Game
+
+This is a console-based blackjack game built using OOP.
+
+1. Clone the repository
+    git clone git@github.com:tsufurukawa/oop_blackjack.git
+2. Change into project directory
+    cd oop_blackjack
+3. Run the ruby file
+    ruby oop_blackjack.rb
+4. Enjoy!!
